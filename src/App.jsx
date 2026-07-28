@@ -323,8 +323,7 @@ function App() {
   // Gemini API Key config
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key');
-    if (saved && !saved.startsWith('AQ.')) return saved;
-    return '';
+    return saved || '';
   });
 
   // User body profile targets
@@ -950,12 +949,17 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       });
 
+      const apiHeaders = {
+        'Content-Type': 'application/json',
+        'X-goog-api-key': apiKey
+      };
+
       // Try gemini-flash-latest first (automatically points to active non-deprecated model)
       let response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: apiHeaders,
           body: requestBody
         }
       );
@@ -966,7 +970,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: apiHeaders,
             body: requestBody
           }
         );
@@ -978,7 +982,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: apiHeaders,
             body: requestBody
           }
         );
