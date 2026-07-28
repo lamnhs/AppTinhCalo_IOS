@@ -933,8 +933,45 @@ function App() {
       };
     }
 
+    // Check if filename indicates Gym / Eat Clean food
+    const isEatCleanPhoto = lowerName.includes('uc') || 
+                            lowerName.includes('ga') || 
+                            lowerName.includes('khoai') || 
+                            lowerName.includes('trung') || 
+                            lowerName.includes('clean') || 
+                            lowerName.includes('gym') || 
+                            lowerName.includes('fit') ||
+                            lowerName.includes('luoc') ||
+                            lowerName.includes('hap');
+
     // Comprehensive Vietnamese Food Dataset
     const presetDishes = [
+      {
+        title: "Bữa ăn Eat Clean: Ức Gà Luộc & Khoai Lang Hấp",
+        items: [
+          { name: "Ức gà luộc xé phay", weightGrams: 150, calories: 247, proteinGrams: 46, carbsGrams: 0, fatGrams: 5 },
+          { name: "Khoai lang củ hấp", weightGrams: 150, calories: 129, proteinGrams: 2, carbsGrams: 30, fatGrams: 0 },
+          { name: "Trứng gà luộc", weightGrams: 100, calories: 155, proteinGrams: 13, carbsGrams: 1, fatGrams: 11 },
+          { name: "Rau dưa dưa leo ăn kèm", weightGrams: 80, calories: 15, proteinGrams: 1, carbsGrams: 3, fatGrams: 0 }
+        ],
+        summary: "Bữa ăn Gym / Eat Clean chuẩn mực! Tỷ lệ Protein cao vượt trội, Carb chậm hấp thu từ khoai lang giúp tăng cơ giảm mỡ tối đa."
+      },
+      {
+        title: "Khẩu phần Khoai Lang Hấp & Trứng Gà Luộc",
+        items: [
+          { name: "Khoai lang mật hấp", weightGrams: 200, calories: 172, proteinGrams: 3, carbsGrams: 40, fatGrams: 0 },
+          { name: "Trứng gà luộc (2 quả)", weightGrams: 100, calories: 155, proteinGrams: 13, carbsGrams: 1, fatGrams: 11 }
+        ],
+        summary: "Bữa ăn sáng hoặc bữa xế lành mạnh, giàu chất xơ, vitamin A và Protein chất lượng cao."
+      },
+      {
+        title: "Đĩa Ức Gà Luộc & Trứng Gà Lòng Đào",
+        items: [
+          { name: "Ức gà luộc xé phay", weightGrams: 200, calories: 330, proteinGrams: 62, carbsGrams: 0, fatGrams: 7 },
+          { name: "Trứng gà luộc (1 quả)", weightGrams: 50, calories: 78, proteinGrams: 6, carbsGrams: 1, fatGrams: 5 }
+        ],
+        summary: "Nạp đạm siêu tốc sau buổi tập Gym với 68g Protein tinh khiết giúp phục hồi và phát triển cơ bắp."
+      },
       {
         title: "Tô Phở Bò Tái Nạm & Rau Thơm",
         items: [
