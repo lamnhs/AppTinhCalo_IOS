@@ -1,0 +1,17 @@
+{
+  "short_name": "LâmBe Calorie",
+  "name": "LâmBe Calorie - Theo dõi dinh dưỡng iOS",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512 192x192 96x96 48x48",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#12111d",
+  "theme_color": "#12111d",
+  "display": "standalone",
+  "orientation": "portrait"
+}
