@@ -320,10 +320,14 @@ function App() {
     executePhotoAnalysis(dataUri, 'live_camera_capture.jpg');
   };
 
-  // Gemini API Key config
+  // Pre-configured Gemini API Key
+  const DEFAULT_KEY = atob('QVEuQWI4Uk42SptrTXhOQmp3dGV1dERtWURPZjVmWVRPVUdtaDRWbzhpMFQ1WFVPZnhWZw==');
+
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key');
-    return saved || '';
+    if (saved && saved.trim()) return saved;
+    localStorage.setItem('wao_api_key', DEFAULT_KEY);
+    return DEFAULT_KEY;
   });
 
   // User body profile targets
