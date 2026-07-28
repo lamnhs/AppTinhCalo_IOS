@@ -140,6 +140,58 @@ const MOCK_DISHES = [
 
 const QUICK_FAVORITES = [
   {
+    name: "Khoai Lang Hấp (150g)",
+    icon: "🥔",
+    subtitle: "129 kcal • 30g Carbs chậm Eat Clean",
+    totalCalories: 129,
+    totalProteinGrams: 2,
+    totalCarbsGrams: 30,
+    totalFatGrams: 0,
+    analysisSummary: "Khoai lang hấp giàu chất xơ, vitamin A và nguồn tinh bột hấp thu chậm tuyệt vời cho người siết cân.",
+    foodItems: [
+      { name: "Khoai lang củ hấp chín", weightGrams: 150, calories: 129, proteinGrams: 2, carbsGrams: 30, fatGrams: 0 }
+    ]
+  },
+  {
+    name: "Trứng Gà Luộc (2 quả)",
+    icon: "🥚",
+    subtitle: "155 kcal • 13g Đạm tinh khiết",
+    totalCalories: 155,
+    totalProteinGrams: 13,
+    totalCarbsGrams: 1,
+    totalFatGrams: 11,
+    analysisSummary: "Trứng gà luộc nguyên quả giàu Protein sinh học cao và Axit amin thiết yếu cho cơ bắp.",
+    foodItems: [
+      { name: "Trứng gà luộc (2 quả ~ 100g)", weightGrams: 100, calories: 155, proteinGrams: 13, carbsGrams: 1, fatGrams: 11 }
+    ]
+  },
+  {
+    name: "200ml Sữa Tươi Không Đường",
+    icon: "🥛",
+    subtitle: "124 kcal • 6.4g Đạm • 9.6g Carbs",
+    totalCalories: 124,
+    totalProteinGrams: 6.4,
+    totalCarbsGrams: 9.6,
+    totalFatGrams: 6.4,
+    analysisSummary: "Sữa tươi nguyên chất không đường bổ sung Canxi và đạm tự nhiên, không tăng đường huyết.",
+    foodItems: [
+      { name: "Sữa tươi tiệt trùng không đường", weightGrams: 200, calories: 124, proteinGrams: 6.4, carbsGrams: 9.6, fatGrams: 6.4 }
+    ]
+  },
+  {
+    name: "150g Ức Gà Luộc Xé Phay",
+    icon: "🍗",
+    subtitle: "247 kcal • 46g Đạm siêu nạp cơ",
+    totalCalories: 247,
+    totalProteinGrams: 46,
+    totalCarbsGrams: 0,
+    totalFatGrams: 5,
+    analysisSummary: "Ức gà luộc nạc hoàn toàn không da, dồi dào Protein chất lượng cao giúp tăng cơ giảm mỡ tối đa.",
+    foodItems: [
+      { name: "Ức gà nạc luộc xé phay", weightGrams: 150, calories: 247, proteinGrams: 46, carbsGrams: 0, fatGrams: 5 }
+    ]
+  },
+  {
     name: "300ml Whey Protein",
     icon: "🥤",
     subtitle: "160 kcal • 27g Đạm",
