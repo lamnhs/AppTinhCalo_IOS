@@ -41,6 +41,16 @@
   padding: 0;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
 }
 
 /* Hide spin-buttons / up-down arrows for number inputs */
