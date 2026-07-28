@@ -1855,11 +1855,35 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
       )}
       </div>
 
-      {/* DYNAMIC IMAGE 1: DRAWER MENU OVERLAY (TAPPED CENTRAL FLOATING BUTTON) */}
+      {/* DYNAMIC DRAWER MENU OVERLAY (TAPPED CENTRAL FLOATING BUTTON) */}
       {isPlusOpen && (
         <div className="wao-overlay-menu-container" onClick={() => setIsPlusOpen(false)}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Sub options grid matching Image 1 */}
+            {/* Highlighted Primary Action: AI Food Camera Scanner */}
+            <div 
+              className="wao-overlay-wide-btn" 
+              onClick={() => {
+                setIsPlusOpen(false);
+                startLiveCamera();
+              }}
+              style={{
+                background: 'linear-gradient(135deg, var(--primary), #7c5dfa)',
+                marginBottom: '10px',
+                border: 'none',
+                boxShadow: '0 8px 20px rgba(158, 128, 249, 0.35)',
+                cursor: 'pointer'
+              }}
+            >
+              <div className="wao-overlay-wide-left">
+                <span className="wao-badge-new" style={{ backgroundColor: '#4ade80', color: '#000', fontWeight: '800' }}>AI</span>
+                <span style={{ fontSize: '14px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📸 Nhận diện món ăn AI
+                </span>
+              </div>
+              <ChevronRight size={18} color="#fff" />
+            </div>
+
+            {/* Sub options grid */}
             <div className="wao-overlay-menu-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
               {/* Ghi lai hoat dong */}
               <div className="wao-overlay-card-btn" onClick={() => {
