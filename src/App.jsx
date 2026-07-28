@@ -153,16 +153,16 @@ const QUICK_FAVORITES = [
     ]
   },
   {
-    name: "Trứng Gà Luộc (2 quả)",
+    name: "Trứng Gà Luộc (1 quả)",
     icon: "🥚",
-    subtitle: "155 kcal • 13g Đạm tinh khiết",
-    totalCalories: 155,
-    totalProteinGrams: 13,
-    totalCarbsGrams: 1,
-    totalFatGrams: 11,
-    analysisSummary: "Trứng gà luộc nguyên quả giàu Protein sinh học cao và Axit amin thiết yếu cho cơ bắp.",
+    subtitle: "78 kcal • 6.5g Đạm tinh khiết",
+    totalCalories: 78,
+    totalProteinGrams: 6.5,
+    totalCarbsGrams: 0.5,
+    totalFatGrams: 5.3,
+    analysisSummary: "Trứng gà luộc (1 quả ~ 50g) dồi dào Protein sinh học cao và Axit amin thiết yếu cho cơ bắp.",
     foodItems: [
-      { name: "Trứng gà luộc (2 quả ~ 100g)", weightGrams: 100, calories: 155, proteinGrams: 13, carbsGrams: 1, fatGrams: 11 }
+      { name: "Trứng gà luộc (1 quả ~ 50g)", weightGrams: 50, calories: 78, proteinGrams: 6.5, carbsGrams: 0.5, fatGrams: 5.3 }
     ]
   },
   {
