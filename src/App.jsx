@@ -336,12 +336,19 @@ function App() {
 
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key') || '';
-    if (saved.startsWith('AQ.Ab8')) {
+    if (!saved || saved.startsWith('AQ.Ab8')) {
       localStorage.removeItem('wao_api_key');
       return '';
     }
     return saved;
   });
+
+  useEffect(() => {
+    if (apiKey && apiKey.startsWith('AQ.Ab8')) {
+      localStorage.removeItem('wao_api_key');
+      setApiKey('');
+    }
+  }, [apiKey]);
 
   // User body profile targets
   const [profile, setProfile] = useState(() => {
