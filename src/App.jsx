@@ -974,55 +974,58 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       });
 
-      // Try gemini-flash-latest (Active production Vision model)
-      let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${activeApiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: requestBody
+      // Cycle through Gemini Flash model versions (2.5-flash, 2.0-flash, 1.5-flash)
+      const modelsToTry = [
+        'gemini-2.5-flash',
+        'gemini-2.0-flash',
+        'gemini-1.5-flash',
+        'gemini-flash-latest',
+        'gemini-1.5-flash-8b'
+      ];
+
+      let response = null;
+      let lastErrText = '';
+
+      for (const modelName of modelsToTry) {
+        try {
+          response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeApiKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: requestBody
+            }
+          );
+
+          if (response && response.ok) {
+            break;
+          } else if (response) {
+            lastErrText = await response.text();
+          }
+        } catch (err) {
+          lastErrText = err.message || String(err);
         }
-      );
-
-      // If gemini-flash-latest fails, try gemini-flash-lite-latest
-      if (!response.ok) {
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${activeApiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: requestBody
-          }
-        );
       }
 
-      // If that fails, try gemini-2.0-flash
-      if (!response.ok) {
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeApiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: requestBody
-          }
-        );
-      }
-
-      if (!response.ok) {
-        const errText = await response.text();
+      if (!response || !response.ok) {
         let parsedErr = '';
         try {
-          const errObj = JSON.parse(errText);
-          parsedErr = errObj.error?.message || errText;
+          const errObj = JSON.parse(lastErrText);
+          parsedErr = errObj.error?.message || lastErrText;
         } catch (e) {
-          parsedErr = errText;
+          parsedErr = lastErrText;
         }
 
-        if (response.status === 429 || parsedErr.includes('quota') || parsedErr.includes('RESOURCE_EXHAUSTED')) {
-          throw new Error(`Dự án Google AI này bị giới hạn Quota (Limit = 0). Vui lòng vào aistudio.google.com/app/apikey -> Nhấn Create API key -> Chọn 'Create API key in new project' để tạo Key mới có Free Tier miễn phí.`);
+        const statusCode = response ? response.status : 500;
+        if (statusCode === 401 || parsedErr.includes('401') || parsedErr.includes('invalid authentication credentials')) {
+          throw new Error(`Mã lỗi 401: Key Gemini không hợp lệ. Vui lòng bấm vào liên kết Google AI Studio bên dưới để tạo Key mới dạng AIzaSy...`);
         }
 
-        throw new Error(`Mã lỗi Gemini API ${response.status}: ${parsedErr.slice(0, 120)}`);
+        if (statusCode === 429 || parsedErr.includes('quota') || parsedErr.includes('RESOURCE_EXHAUSTED')) {
+          throw new Error(`Dự án Google AI này bị giới hạn Quota (Limit = 0). Vui lòng bấm vào liên kết Google AI Studio bên dưới ➔ Tạo Key mới và chọn 'Create API key in NEW project' để nhận lượt dùng miễn phí.`);
+        }
+
+        throw new Error(`Mã lỗi Gemini API ${statusCode}: ${parsedErr.slice(0, 140)}`);
       }
 
       const data = await response.json();
