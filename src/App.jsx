@@ -325,8 +325,8 @@ function App() {
     executePhotoAnalysis(dataUri, 'live_camera_capture.jpg');
   };
 
-  // Pre-configured Gemini API Key
-  const DEFAULT_KEY = atob('QVEuQWI4Uk42SptrTXhOQmp3dGV1dERtWURPZjVmWVRPVUdtaDRWbzhpMFQ1WFVPZnhWZw==');
+  // Pre-configured Gemini API Key (Gemini AppCalo project)
+  const DEFAULT_KEY = atob('QVEuQWI4Uk42S0dWZnQ0ekJNR3ltRVZYbWlqbGtNazF5a1ZCNzZxTURSNVh0V0hxNkNMUEE=');
 
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key');
@@ -958,9 +958,9 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       });
 
-      // Try gemini-2.0-flash (Active standard Vision model)
+      // Try gemini-flash-latest (Active production Vision model)
       let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -968,10 +968,22 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       );
 
-      // If gemini-2.0-flash fails, try gemini-2.0-flash-lite
+      // If gemini-flash-latest fails, try gemini-flash-lite-latest
       if (!response.ok) {
         response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: requestBody
+          }
+        );
+      }
+
+      // If that fails, try gemini-2.0-flash
+      if (!response.ok) {
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
