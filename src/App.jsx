@@ -287,7 +287,9 @@ function App() {
       setIsLiveCameraOpen(true);
     } catch (err) {
       console.warn('Live camera permission or support unavailable, falling back to file input:', err);
-      if (cameraInputRef.current) {
+      if (galleryInputRef.current) {
+        galleryInputRef.current.click();
+      } else if (cameraInputRef.current) {
         cameraInputRef.current.click();
       }
     }
@@ -1410,6 +1412,29 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
 
   return (
     <div className="app-container">
+      {/* Hidden File Inputs for Camera & Gallery (Always Mounted) */}
+      <input 
+        ref={cameraInputRef}
+        type="file" 
+        accept="image/*" 
+        capture="environment" 
+        onChange={(e) => {
+          setIsPhotoSourceModalOpen(false);
+          handleImageFileChange(e);
+        }}
+        style={{ display: 'none' }}
+      />
+      <input 
+        ref={galleryInputRef}
+        type="file" 
+        accept="image/*" 
+        onChange={(e) => {
+          setIsPhotoSourceModalOpen(false);
+          handleImageFileChange(e);
+        }}
+        style={{ display: 'none' }}
+      />
+
       {/* Floating alert banners */}
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
@@ -1623,25 +1648,35 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
           {/* 2 main quick shortcut action buttons row */}
           <div className="wao-actions-row">
             {/* 1. Log food manually */}
-            <div className="wao-action-btn-wrapper">
-              <button className="wao-action-btn yellow" onClick={() => {
+            <div 
+              className="wao-action-btn-wrapper"
+              onClick={() => {
                 setActiveMealForAdd('breakfast');
                 setIsAddFoodOpen(true);
-              }}>
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <button 
+                type="button" 
+                className="wao-action-btn yellow"
+              >
                 <Search />
               </button>
               <span className="wao-action-lbl">Ghi lại bữa ăn</span>
             </div>
 
             {/* 2. AI Camera scanner */}
-            <div className="wao-action-btn-wrapper">
+            <div 
+              className="wao-action-btn-wrapper"
+              onClick={() => {
+                setIsPlusOpen(false);
+                setIsPhotoSourceModalOpen(true);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <button 
                 type="button" 
                 className="wao-action-btn green" 
-                onClick={() => {
-                  setIsPlusOpen(false);
-                  startLiveCamera();
-                }}
               >
                 <Sparkles />
               </button>
@@ -1864,7 +1899,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
               className="wao-overlay-wide-btn" 
               onClick={() => {
                 setIsPlusOpen(false);
-                startLiveCamera();
+                setIsPhotoSourceModalOpen(true);
               }}
               style={{
                 background: 'linear-gradient(135deg, var(--primary), #7c5dfa)',
