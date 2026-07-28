@@ -323,10 +323,8 @@ function App() {
   // Gemini API Key config
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key');
-    if (saved) return saved;
-    const defaultKey = 'AQ.Ab8RN6J-NUSb3ldXGpQqqIa8tBMCdNbFv5lbHp_UafL--8PR4g';
-    localStorage.setItem('wao_api_key', defaultKey);
-    return defaultKey;
+    if (saved && !saved.startsWith('AQ.')) return saved;
+    return '';
   });
 
   // User body profile targets
@@ -890,52 +888,31 @@ function App() {
     setIsScanDetailsOpen(true);
     setIsScanning(true);
     if (!apiKey) {
-      // Simulate offline demo scan
       setTimeout(() => {
         let matchedMeal = null;
         const lowerName = (fileName || '').toLowerCase();
-        if (
-          lowerName.includes('pizza') ||
-          lowerName.includes('piza') ||
-          lowerName.includes('pepperoni') ||
-          lowerName.includes('peperoni')
-        ) {
-          matchedMeal = MOCK_DISHES[4]; // Pizza Pepperoni phô mai
-        } else if (
-          lowerName.includes('hq720') ||
-          lowerName.includes('720') ||
-          lowerName.includes('bun') ||
-          lowerName.includes('bún') ||
-          lowerName.includes('thit') ||
-          lowerName.includes('thịt') ||
-          lowerName.includes('nuong') ||
-          lowerName.includes('nướng') ||
-          lowerName.includes('cha_gio') ||
-          lowerName.includes('chả giò')
-        ) {
-          matchedMeal = MOCK_DISHES[3]; // Bún Thịt Nướng Chả Giò
-        } else if (
-          lowerName.includes('com-tam') || 
-          lowerName.includes('com_tam') || 
-          lowerName.includes('comtam') || 
-          lowerName.includes('cơm') || 
-          lowerName.includes('sườn') || 
-          lowerName.includes('bì')
-        ) {
-          matchedMeal = MOCK_DISHES[1]; // Cơm Tấm Sườn Bì Chả
-        } else if (
-          lowerName.includes('pho') || 
-          lowerName.includes('phở') || 
-          lowerName.includes('bo')
-        ) {
-          matchedMeal = MOCK_DISHES[0]; // Phở Bò Hà Nội
-        } else {
-          matchedMeal = MOCK_DISHES[4]; // Pizza Pepperoni default
+        if (lowerName.includes('pizza') || lowerName.includes('pepperoni')) {
+          matchedMeal = MOCK_DISHES[4];
+        } else if (lowerName.includes('bun') || lowerName.includes('bún')) {
+          matchedMeal = MOCK_DISHES[3];
+        } else if (lowerName.includes('com') || lowerName.includes('cơm')) {
+          matchedMeal = MOCK_DISHES[1];
+        } else if (lowerName.includes('pho') || lowerName.includes('phở')) {
+          matchedMeal = MOCK_DISHES[0];
         }
-        setScannedResult(matchedMeal);
+
+        if (matchedMeal) {
+          setScannedResult(matchedMeal);
+          showToast(`Demo: Nhận diện thành công ${matchedMeal.name}!`, 'success');
+        } else {
+          setScannedResult({
+            isError: true,
+            errorMessage: 'Bạn chưa nhập Gemini API Key! Vui lòng vào Cài đặt (⚙️) dán API Key của bạn để AI phân tích chính xác món ăn thực tế.'
+          });
+          showToast('Vui lòng cài đặt Gemini API Key!', 'warning');
+        }
         setIsScanning(false);
-        showToast(`Demo: Nhận diện thành công ${matchedMeal.name}!`, 'success');
-      }, 2500);
+      }, 1500);
       return;
     }
 
@@ -1055,42 +1032,42 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       setIsScanning(false);
       showToast(`AI Gemini quét thành công: ${formatted.name}!`, 'success');
     } catch (err) {
-      console.error('API Error, falling back to smart recognition:', err);
-      let matchedMeal = MOCK_DISHES[4]; // Default Pizza Pepperoni
-      const lowerName = (fileName || '').toLowerCase();
-      if (
-        lowerName.includes('pizza') || lowerName.includes('piza') || lowerName.includes('pepperoni') || lowerName.includes('peperoni')
-      ) {
-        matchedMeal = MOCK_DISHES[4]; // Pizza Pepperoni
-      } else if (
-        lowerName.includes('bun') || lowerName.includes('bún') || lowerName.includes('thit') || lowerName.includes('thịt') || lowerName.includes('nuong') || lowerName.includes('nướng') || lowerName.includes('cha_gio') || lowerName.includes('chả giò')
-      ) {
-        matchedMeal = MOCK_DISHES[3]; // Bún Thịt Nướng
-      } else if (
-        lowerName.includes('com-tam') || lowerName.includes('com_tam') || lowerName.includes('comtam') || lowerName.includes('cơm') || lowerName.includes('sườn') || lowerName.includes('bì')
-      ) {
-        matchedMeal = MOCK_DISHES[1]; // Cơm Tấm Sườn Bì
-      } else if (
-        lowerName.includes('pho') || lowerName.includes('phở') || lowerName.includes('bo')
-      ) {
-        matchedMeal = MOCK_DISHES[0]; // Phở Bò Hà Nội
-      } else if (
-        lowerName.includes('salad') || lowerName.includes('uc_ga') || lowerName.includes('gà')
-      ) {
-        matchedMeal = MOCK_DISHES[2]; // Salad Ức Gà
-      } else if (
-        lowerName.includes('sushi') || lowerName.includes('ca_hoi') || lowerName.includes('cá hồi')
-      ) {
-        matchedMeal = MOCK_DISHES[5]; // Set Sushi Cá Hồi
-      } else if (
-        lowerName.includes('banh_mi') || lowerName.includes('bánh mì') || lowerName.includes('banhmi')
-      ) {
-        matchedMeal = MOCK_DISHES[6]; // Bánh Mì Thập Cẩm
-      }
-      setScannedResult(matchedMeal);
+      console.error('API Error:', err);
       setIsScanning(false);
-      showToast(`Nhận diện thành công ${matchedMeal.name}!`, 'success');
+
+      // Check if filename matches known demo dishes
+      const lowerName = (fileName || '').toLowerCase();
+      let matchedMeal = null;
+
+      if (lowerName.includes('pizza') || lowerName.includes('pepperoni')) {
+        matchedMeal = MOCK_DISHES[4];
+      } else if (lowerName.includes('bun') || lowerName.includes('bún')) {
+        matchedMeal = MOCK_DISHES[3];
+      } else if (lowerName.includes('com') || lowerName.includes('cơm') || lowerName.includes('suon')) {
+        matchedMeal = MOCK_DISHES[1];
+      } else if (lowerName.includes('pho') || lowerName.includes('phở')) {
+        matchedMeal = MOCK_DISHES[0];
+      } else if (lowerName.includes('salad')) {
+        matchedMeal = MOCK_DISHES[2];
+      } else if (lowerName.includes('sushi')) {
+        matchedMeal = MOCK_DISHES[5];
+      } else if (lowerName.includes('banh') || lowerName.includes('bánh')) {
+        matchedMeal = MOCK_DISHES[6];
+      }
+
+      if (matchedMeal) {
+        setScannedResult(matchedMeal);
+        showToast(`Demo: Nhận diện thành công ${matchedMeal.name}!`, 'success');
+      } else {
+        // Show clear API Key Error card instead of fake Pizza Pepperoni result!
+        setScannedResult({
+          isError: true,
+          errorMessage: 'Chưa cài đặt Gemini API Key hợp lệ! Vui lòng vào Cài đặt (⚙️) nhập API Key của bạn (bắt đầu bằng AIzaSy...) để AI phân tích chính xác món ăn thực tế.'
+        });
+        showToast('Gemini API Key không hợp lệ!', 'error');
+      }
     }
+  };
   };
 
   // Add AI scans to active diary
@@ -1660,7 +1637,11 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                 className="wao-action-btn green" 
                 onClick={() => {
                   setIsPlusOpen(false);
-                  setIsPhotoSourceModalOpen(true);
+                  if (cameraInputRef.current) {
+                    cameraInputRef.current.click();
+                  } else {
+                    setIsPhotoSourceModalOpen(true);
+                  }
                 }}
               >
                 <Sparkles />
@@ -2828,88 +2809,118 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
             ) : scannedResult ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {selectedImage && (
-                  <div style={{ width: '100%', height: '180px', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ width: '100%', maxHeight: '320px', minHeight: '180px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', backgroundColor: '#0d0c15', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <img 
                       src={selectedImage} 
                       alt="Scanned Food" 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      style={{ width: '100%', maxHeight: '320px', objectFit: 'contain' }} 
                     />
                   </div>
                 )}
-                <div style={{ textAlign: 'center' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: '800' }}>{scannedResult.name}</h3>
-                  <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                    Phát hiện thành công {editableItems.length} thành phần thực phẩm
-                  </p>
-                </div>
 
-                {/* Macro metrics badge pills (Recalculated dynamically) */}
-                <div className="analyzed-macros-pill" style={{ justifyContent: 'center' }}>
-                  <div className="macro-badge calories" style={{ fontSize: '15px', padding: '6px 16px' }}>
-                    <Zap size={14} fill="var(--primary)" /> {scanTotals.calories} kcal
+                {scannedResult.isError ? (
+                  <div style={{ padding: '16px', backgroundColor: 'rgba(255, 69, 58, 0.1)', border: '1px solid rgba(255, 69, 58, 0.3)', borderRadius: '16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔑</div>
+                    <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#ff4d4d', marginBottom: '6px' }}>
+                      Cần Gemini API Key để nhận diện
+                    </h4>
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '16px' }}>
+                      {scannedResult.errorMessage}
+                    </p>
+                    <button 
+                      type="button" 
+                      className="primary-btn" 
+                      onClick={() => {
+                        setIsScanDetailsOpen(false);
+                        setActiveTab('settings');
+                      }}
+                      style={{ padding: '12px', fontSize: '13px' }}
+                    >
+                      ⚙️ Đến phần Cài đặt nhập Gemini API Key
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <div style={{ textAlign: 'center' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: '800' }}>{scannedResult.name}</h3>
+                      <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        Phát hiện thành công {editableItems.length} thành phần thực phẩm
+                      </p>
+                    </div>
 
-                {/* AI advice recommendation block */}
-                <div style={{ padding: '12px', backgroundColor: '#25223e', borderRadius: '14px', fontSize: '12px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: '8px' }}>
-                  <Sparkles size={16} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ color: 'white', lineHeight: '1.4' }}>
-                    <strong>Nhận xét dinh dưỡng:</strong> {scannedResult.analysisSummary}
-                  </p>
-                </div>
+                    {/* Macro metrics badge pills (Recalculated dynamically) */}
+                    <div className="analyzed-macros-pill" style={{ justifyContent: 'center' }}>
+                      <div className="macro-badge calories" style={{ fontSize: '15px', padding: '6px 16px' }}>
+                        <Zap size={14} fill="var(--primary)" /> {scanTotals.calories} kcal
+                      </div>
+                    </div>
 
-                {/* Detected food item rows breakdown with weight/gram adjusters */}
-                <div>
-                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-                    Điều chỉnh lượng thức ăn thực tế:
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {editableItems.map((item, idx) => (
-                      <div key={idx} style={{ padding: '12px', backgroundColor: '#25223e', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.02)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                          <strong style={{ fontSize: '14px', color: 'white' }}>{item.name}</strong>
-                          <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--primary)' }}>
-                            {item.calories} kcal
-                          </span>
+                    {/* AI advice recommendation block */}
+                    {scannedResult.analysisSummary && (
+                      <div style={{ padding: '12px', backgroundColor: '#25223e', borderRadius: '14px', fontSize: '12px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: '8px' }}>
+                        <Sparkles size={16} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        <p style={{ color: 'white', lineHeight: '1.4' }}>
+                          <strong>Nhận xét dinh dưỡng:</strong> {scannedResult.analysisSummary}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Detected food item rows breakdown with weight/gram adjusters */}
+                    {editableItems.length > 0 && (
+                      <div>
+                        <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                          Điều chỉnh lượng thức ăn thực tế:
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {editableItems.map((item, idx) => (
+                            <div key={idx} style={{ padding: '12px', backgroundColor: '#25223e', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.02)' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <strong style={{ fontSize: '14px', color: 'white' }}>{item.name}</strong>
+                                <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--primary)' }}>
+                                  {item.calories} kcal
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Khối lượng:</span>
+                                  <input 
+                                    type="number"
+                                    className="form-input"
+                                    style={{ padding: '4px 8px', fontSize: '12px', width: '70px', borderRadius: '6px', textAlign: 'center', backgroundColor: '#1d1b2e', border: '1px solid rgba(255,255,255,0.08)', color: 'white' }}
+                                    value={item.weightGrams}
+                                    onChange={(e) => handleWeightChange(idx, e.target.value)}
+                                  />
+                                  <span style={{ fontSize: '12px', color: 'white', fontWeight: '600' }}>g</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Khối lượng:</span>
-                            <input 
-                              type="number"
-                              className="form-input"
-                              style={{ padding: '4px 8px', fontSize: '12px', width: '70px', borderRadius: '6px', textAlign: 'center', backgroundColor: '#1d1b2e', border: '1px solid rgba(255,255,255,0.08)', color: 'white' }}
-                              value={item.weightGrams}
-                              onChange={(e) => handleWeightChange(idx, e.target.value)}
-                            />
-                            <span style={{ fontSize: '12px', color: 'white', fontWeight: '600' }}>g</span>
+                      </div>
+                    )}
+
+                    {/* Active Meal Type Log Selector */}
+                    <div className="form-group">
+                      <label className="form-label">Chọn bữa lưu nhật ký:</label>
+                      <div className="form-toggle-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                        {['breakfast', 'lunch', 'dinner', 'snack'].map((m) => (
+                          <div 
+                            key={m} 
+                            className={`toggle-option ${activeMealForAdd === m ? 'active' : ''}`}
+                            onClick={() => setActiveMealForAdd(m)}
+                            style={{ fontSize: '11px', padding: '8px 2px' }}
+                          >
+                            {getMealNameVi(m)}
                           </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Active Meal Type Log Selector */}
-                <div className="form-group">
-                  <label className="form-label">Chọn bữa lưu nhật ký:</label>
-                  <div className="form-toggle-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-                    {['breakfast', 'lunch', 'dinner', 'snack'].map((m) => (
-                      <div 
-                        key={m} 
-                        className={`toggle-option ${activeMealForAdd === m ? 'active' : ''}`}
-                        onClick={() => setActiveMealForAdd(m)}
-                        style={{ fontSize: '11px', padding: '8px 2px' }}
-                      >
-                        {getMealNameVi(m)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <button type="button" className="primary-btn" onClick={handleSaveScanToDiary}>
-                  Lưu vào Bữa {getMealNameVi(activeMealForAdd)}
-                </button>
+                    <button type="button" className="primary-btn" onClick={handleSaveScanToDiary}>
+                      Lưu vào Bữa {getMealNameVi(activeMealForAdd)}
+                    </button>
+                  </>
+                )}
               </div>
             ) : null}
           </div>
