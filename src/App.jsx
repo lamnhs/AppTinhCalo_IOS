@@ -334,15 +334,11 @@ function App() {
     executePhotoAnalysis(dataUri, 'live_camera_capture.jpg');
   };
 
-  // Pre-configured Gemini API Key (Gemini AppCalo project)
-  const DEFAULT_KEY = atob('QVEuQWI4Uk42S0dWZnQ0ekJNR3ltRVZYbWlqbGtNazF5a1ZCNzZxTURSNVh0V0hxNkNMUEE=');
-
   const [apiKey, setApiKey] = useState(() => {
-    const saved = localStorage.getItem('wao_api_key');
-    // If no saved key or if stored key is the old broken key, auto-update to working DEFAULT_KEY
-    if (!saved || saved.includes('AQ.Ab8RN6Jjk')) {
-      localStorage.setItem('wao_api_key', DEFAULT_KEY);
-      return DEFAULT_KEY;
+    const saved = localStorage.getItem('wao_api_key') || '';
+    if (saved.startsWith('AQ.Ab8')) {
+      localStorage.removeItem('wao_api_key');
+      return '';
     }
     return saved;
   });
@@ -908,8 +904,16 @@ function App() {
     setIsScanDetailsOpen(true);
     setIsScanning(true);
 
-    // Ensure activeApiKey is valid and fallback to working DEFAULT_KEY if empty or stale
-    const activeApiKey = (!apiKey || !apiKey.trim() || apiKey.includes('AQ.Ab8RN6Jjk')) ? DEFAULT_KEY : apiKey.trim();
+    const activeApiKey = (apiKey || localStorage.getItem('wao_api_key') || '').trim();
+
+    if (!activeApiKey || activeApiKey.startsWith('AQ.Ab8')) {
+      setIsScanning(false);
+      setScannedResult({
+        isError: true,
+        errorMessage: 'Vui lòng nhập/dán Gemini API Key của bạn (bắt đầu bằng AIzaSy...) để nhận diện món ăn. Bạn có thể bấm vào link bên dưới để tạo Key miễn phí từ Google AI Studio.'
+      });
+      return;
+    }
 
     try {
       const mimeType = base64DataUri.split(';')[0].split(':')[1];
@@ -1863,28 +1867,54 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
 
           {/* API Key management */}
           <div className="wao-card" style={{ margin: '15px 0' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px' }}>Nhập API Key quét ảnh</h3>
-            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-              Hãy cung cấp Gemini API Key để tính toán calo bằng trí tuệ nhân tạo.
+            <h3 style={{ fontSize: '15px', fontWeight: '800', marginBottom: '8px' }}>🔑 Quản lý Gemini API Key</h3>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: '1.4' }}>
+              Trí tuệ nhân tạo Gemini cần API Key để phân tích hình ảnh bữa ăn. Vui lòng tạo Key miễn phí từ Google AI Studio (Chọn <strong>Create API key in NEW project</strong> để có lượt quét miễn phí).
             </p>
+
+            <a 
+              href="https://aistudio.google.com/app/apikey" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                padding: '12px',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(158, 128, 249, 0.15)',
+                color: 'var(--primary)',
+                fontWeight: '700',
+                fontSize: '13px',
+                textDecoration: 'none',
+                marginBottom: '12px',
+                border: '1px solid rgba(158, 128, 249, 0.3)'
+              }}
+            >
+              🚀 Bấm đây để lấy Gemini API Key miễn phí (Google AI Studio)
+            </a>
+
             <div style={{ display: 'flex', gap: '8px' }}>
               <input 
-                type="password"
+                type="text"
                 className="form-input"
-                placeholder="Nhập Gemini API Key..."
+                placeholder="Dán Gemini API Key (bắt đầu bằng AIzaSy...)"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                style={{ flex: 1, padding: '10px' }}
+                style={{ flex: 1, padding: '10px', fontSize: '13px' }}
               />
               <button 
                 className="primary-btn" 
                 onClick={() => {
-                  localStorage.setItem('wao_api_key', apiKey);
-                  showToast('Đã lưu API Key!', 'success');
+                  const cleanKey = apiKey.trim();
+                  setApiKey(cleanKey);
+                  localStorage.setItem('wao_api_key', cleanKey);
+                  showToast('Đã lưu Gemini API Key mới!', 'success');
                 }}
-                style={{ width: 'auto', padding: '0 16px' }}
+                style={{ width: 'auto', padding: '0 16px', fontWeight: '700' }}
               >
-                Lưu
+                Lưu Key
               </button>
             </div>
           </div>
@@ -2895,6 +2925,28 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                     </p>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                      <a 
+                        href="https://aistudio.google.com/app/apikey" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          padding: '10px',
+                          borderRadius: '10px',
+                          backgroundColor: 'rgba(158, 128, 249, 0.15)',
+                          color: 'var(--primary)',
+                          fontWeight: '700',
+                          fontSize: '12px',
+                          textDecoration: 'none',
+                          border: '1px solid rgba(158, 128, 249, 0.3)'
+                        }}
+                      >
+                        🚀 Bấm đây để lấy Key Gemini miễn phí (Google AI Studio)
+                      </a>
+
                       <input 
                         type="text" 
                         className="form-input" 
