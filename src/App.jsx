@@ -1006,8 +1006,23 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       }
 
       const data = await response.json();
-      const text = data.candidates[0].content.parts[0].text;
-      const parsed = JSON.parse(text);
+      const parts = data.candidates?.[0]?.content?.parts || [];
+      
+      // Find the part that contains the JSON response (skipping thought parts)
+      const jsonPart = parts.find(p => !p.thought && p.text && (p.text.includes('{') || p.text.includes('['))) 
+        || parts.find(p => !p.thought && p.text) 
+        || parts[parts.length - 1];
+
+      const rawText = jsonPart?.text || '';
+      
+      // Extract valid JSON string if wrapped in markdown
+      let cleanJsonText = rawText;
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanJsonText = jsonMatch[0];
+      }
+
+      const parsed = JSON.parse(cleanJsonText);
 
       const formatted = {
         name: parsed.dishTitle || parsed.foodItems[0]?.name || "Bữa ăn quét được",
@@ -2788,7 +2803,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                   <div style={{ padding: '16px', backgroundColor: 'rgba(255, 69, 58, 0.1)', border: '1px solid rgba(255, 69, 58, 0.3)', borderRadius: '16px', textAlign: 'center' }}>
                     <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔑</div>
                     <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#ff4d4d', marginBottom: '6px' }}>
-                      Cần Gemini API Key để nhận diện
+                      {scannedResult.errorMessage?.includes('401') ? 'Cần kiểm tra lại Gemini API Key' : 'Thông báo từ Gemini AI'}
                     </h4>
                     <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '16px' }}>
                       {scannedResult.errorMessage}
