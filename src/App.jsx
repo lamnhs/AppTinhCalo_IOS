@@ -330,9 +330,12 @@ function App() {
 
   const [apiKey, setApiKey] = useState(() => {
     const saved = localStorage.getItem('wao_api_key');
-    if (saved && saved.trim()) return saved;
-    localStorage.setItem('wao_api_key', DEFAULT_KEY);
-    return DEFAULT_KEY;
+    // If no saved key or if stored key is the old broken key, auto-update to working DEFAULT_KEY
+    if (!saved || saved.includes('AQ.Ab8RN6Jjk')) {
+      localStorage.setItem('wao_api_key', DEFAULT_KEY);
+      return DEFAULT_KEY;
+    }
+    return saved;
   });
 
   // User body profile targets
@@ -896,15 +899,8 @@ function App() {
     setIsScanDetailsOpen(true);
     setIsScanning(true);
 
-    if (!apiKey || !apiKey.trim()) {
-      setIsScanning(false);
-      setScannedResult({
-        isError: true,
-        errorMessage: 'Vui lòng vào Cài đặt (⚙️) dán Gemini API Key của bạn (bắt đầu bằng AIzaSy...) để nhận diện ảnh trực tiếp 100% bằng AI!'
-      });
-      showToast('Cần cài đặt Gemini API Key!', 'warning');
-      return;
-    }
+    // Ensure activeApiKey is valid and fallback to working DEFAULT_KEY if empty or stale
+    const activeApiKey = (!apiKey || !apiKey.trim() || apiKey.includes('AQ.Ab8RN6Jjk')) ? DEFAULT_KEY : apiKey.trim();
 
     try {
       const mimeType = base64DataUri.split(';')[0].split(':')[1];
@@ -960,7 +956,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
 
       // Try gemini-flash-latest (Active production Vision model)
       let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${activeApiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -971,7 +967,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       // If gemini-flash-latest fails, try gemini-flash-lite-latest
       if (!response.ok) {
         response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${activeApiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -983,7 +979,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       // If that fails, try gemini-2.0-flash
       if (!response.ok) {
         response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeApiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
