@@ -883,36 +883,18 @@ function App() {
     reader.readAsDataURL(file);
   };
 
-  // Call Gemini API or offline simulator
+  // Call Gemini API 100% for image analysis
   const executePhotoAnalysis = async (base64DataUri, fileName = '') => {
     setIsScanDetailsOpen(true);
     setIsScanning(true);
-    if (!apiKey) {
-      setTimeout(() => {
-        let matchedMeal = null;
-        const lowerName = (fileName || '').toLowerCase();
-        if (lowerName.includes('pizza') || lowerName.includes('pepperoni')) {
-          matchedMeal = MOCK_DISHES[4];
-        } else if (lowerName.includes('bun') || lowerName.includes('bún')) {
-          matchedMeal = MOCK_DISHES[3];
-        } else if (lowerName.includes('com') || lowerName.includes('cơm')) {
-          matchedMeal = MOCK_DISHES[1];
-        } else if (lowerName.includes('pho') || lowerName.includes('phở')) {
-          matchedMeal = MOCK_DISHES[0];
-        }
 
-        if (matchedMeal) {
-          setScannedResult(matchedMeal);
-          showToast(`Demo: Nhận diện thành công ${matchedMeal.name}!`, 'success');
-        } else {
-          setScannedResult({
-            isError: true,
-            errorMessage: 'Bạn chưa nhập Gemini API Key! Vui lòng vào Cài đặt (⚙️) dán API Key của bạn để AI phân tích chính xác món ăn thực tế.'
-          });
-          showToast('Vui lòng cài đặt Gemini API Key!', 'warning');
-        }
-        setIsScanning(false);
-      }, 1500);
+    if (!apiKey || !apiKey.trim()) {
+      setIsScanning(false);
+      setScannedResult({
+        isError: true,
+        errorMessage: 'Vui lòng vào Cài đặt (⚙️) dán Gemini API Key của bạn (bắt đầu bằng AIzaSy...) để nhận diện ảnh trực tiếp 100% bằng AI!'
+      });
+      showToast('Cần cài đặt Gemini API Key!', 'warning');
       return;
     }
 
@@ -922,7 +904,7 @@ function App() {
       
       const prompt = `Phân tích hình ảnh bữa ăn này và ước lượng lượng calo, chất béo (fat), protein, carbohydrate (carbs), và khối lượng (weightGrams) của từng món ăn trong hình. 
 Hãy trả về một đối tượng JSON chính xác theo ngôn ngữ Tiếng Việt, mô tả chi tiết:
-1. Tên tổng quát của đĩa/tô/bữa ăn này (dishTitle), ví dụ: "Bánh Pizza Pepperoni phô mai", "Bún thịt nướng chả giò", "Phở bò tái nạm", v.v.
+1. Tên tổng quát của đĩa/tô/bữa ăn này (dishTitle), ví dụ: "Bánh Pizza Pepperoni phô mai", "Bún thịt nướng chả giò", "Phở bò tái nạm", "Hộp sữa tươi TH True Milk 180ml", v.v.
 2. Danh sách các món ăn thành phần trong hình (foodItems), mỗi món gồm: tên món (name), khối lượng ước lượng tính bằng gram (weightGrams), calo (calories), protein tính bằng gram (proteinGrams), carbs tính bằng gram (carbsGrams), fat tính bằng gram (fatGrams).
 3. Tổng lượng calo (totalCalories), tổng protein (totalProteinGrams), tổng carbs (totalCarbsGrams), tổng fat (totalFatGrams).
 4. Một câu tóm tắt phân tích ngắn gọn, khoảng 1-2 câu (analysisSummary), nhận xét về dinh dưỡng bữa ăn này.
@@ -1004,7 +986,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Gemini API ${response.status}: ${errText}`);
+        throw new Error(`Mã lỗi Gemini API ${response.status}: ${errText.slice(0, 100)}`);
       }
 
       const data = await response.json();
@@ -1030,44 +1012,16 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
 
       setScannedResult(formatted);
       setIsScanning(false);
-      showToast(`AI Gemini quét thành công: ${formatted.name}!`, 'success');
+      showToast(`AI Gemini nhận diện thành công: ${formatted.name}!`, 'success');
     } catch (err) {
       console.error('API Error:', err);
       setIsScanning(false);
-
-      // Check if filename matches known demo dishes
-      const lowerName = (fileName || '').toLowerCase();
-      let matchedMeal = null;
-
-      if (lowerName.includes('pizza') || lowerName.includes('pepperoni')) {
-        matchedMeal = MOCK_DISHES[4];
-      } else if (lowerName.includes('bun') || lowerName.includes('bún')) {
-        matchedMeal = MOCK_DISHES[3];
-      } else if (lowerName.includes('com') || lowerName.includes('cơm') || lowerName.includes('suon')) {
-        matchedMeal = MOCK_DISHES[1];
-      } else if (lowerName.includes('pho') || lowerName.includes('phở')) {
-        matchedMeal = MOCK_DISHES[0];
-      } else if (lowerName.includes('salad')) {
-        matchedMeal = MOCK_DISHES[2];
-      } else if (lowerName.includes('sushi')) {
-        matchedMeal = MOCK_DISHES[5];
-      } else if (lowerName.includes('banh') || lowerName.includes('bánh')) {
-        matchedMeal = MOCK_DISHES[6];
-      }
-
-      if (matchedMeal) {
-        setScannedResult(matchedMeal);
-        showToast(`Demo: Nhận diện thành công ${matchedMeal.name}!`, 'success');
-      } else {
-        // Show clear API Key Error card instead of fake Pizza Pepperoni result!
-        setScannedResult({
-          isError: true,
-          errorMessage: 'Chưa cài đặt Gemini API Key hợp lệ! Vui lòng vào Cài đặt (⚙️) nhập API Key của bạn (bắt đầu bằng AIzaSy...) để AI phân tích chính xác món ăn thực tế.'
-        });
-        showToast('Gemini API Key không hợp lệ!', 'error');
-      }
+      setScannedResult({
+        isError: true,
+        errorMessage: `Lỗi gọi Gemini AI (${err.message}). Vui lòng kiểm tra lại Gemini API Key trong phần Cài đặt (⚙️).`
+      });
+      showToast('Lỗi kết nối Gemini AI!', 'error');
     }
-  };
   };
 
   // Add AI scans to active diary
