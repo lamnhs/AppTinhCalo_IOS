@@ -1,0 +1,6 @@
+{
+  "appId": "com.lambecalorie.app",
+  "appName": "LâmBe Calorie",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

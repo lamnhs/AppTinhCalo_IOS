@@ -1,0 +1,931 @@
+:root {
+  /* Wao App Dark Theme Color Palette */
+  --bg-primary: #12111d;      /* Dark navy/indigo-purple background */
+  --bg-secondary: #1d1b2e;    /* Card background */
+  --bg-tertiary: #27243c;     /* Lighter details / hover states */
+  --bg-glass: rgba(18, 17, 29, 0.85);
+  --border-color: rgba(255, 255, 255, 0.06);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #8b89a3;  /* Soft grey purple */
+  --text-muted: #57556f;
+  
+  /* Accent color (Wao purple) */
+  --primary: #9e80f9;
+  --primary-glow: rgba(158, 128, 249, 0.3);
+  
+  /* Wao App 4 Color Buttons */
+  --btn-yellow: #fcc43f;
+  --btn-blue: #4092ff;
+  --btn-green: #3cd381;
+  --btn-red: #fc6d6d;
+  
+  /* Macronutrients color cues */
+  --protein: #fc6d6d; /* Reddish pink in Wao */
+  --carbs: #4092ff;   /* Blue in Wao */
+  --fat: #fcc43f;     /* Yellow in Wao */
+  
+  --shadow-sm: rgba(0, 0, 0, 0.2) 0 4px 12px;
+  --shadow-md: rgba(0, 0, 0, 0.4) 0 8px 24px;
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', var(--font-sans);
+  
+  --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+  --safe-area-top: env(safe-area-inset-top, 47px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Hide spin-buttons / up-down arrows for number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+body {
+  background-color: #0c0b14;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.4;
+  overflow: hidden;
+  height: 100vh;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Wao iOS Container Setup */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 35px rgba(0,0,0,0.6);
+  border-left: 1px solid rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255,255,255,0.03);
+  padding-top: var(--safe-area-top);
+  overflow: hidden;
+}
+
+.wao-tab-content-area {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(85px + var(--safe-area-bottom));
+}
+
+/* Premium Header with Wao badging styling */
+.app-header {
+  padding: 16px 20px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gold-badge {
+  background: linear-gradient(135deg, #ffe28a 0%, #ffc53d 100%);
+  color: #5c3a00;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(252, 196, 63, 0.25);
+  font-family: var(--font-display);
+}
+
+.header-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.water-quick-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.water-quick-status svg {
+  color: var(--text-secondary);
+}
+
+.calendar-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+/* Wao horizontal day picker selection styling */
+.day-picker {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+
+.day-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-item .day-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.day-item.active {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(158, 128, 249, 0.4);
+}
+
+.day-item.active .day-name {
+  color: white;
+  font-weight: 700;
+}
+
+/* Wao Title Row */
+.wao-section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 8px;
+}
+
+.wao-title-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wao-title-date-sub {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+}
+
+.wao-title-text {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.wao-report-btn {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wao-report-btn:active {
+  background-color: var(--bg-tertiary);
+}
+
+/* Large Central Calorie Progress Circle */
+.wao-ring-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  position: relative;
+}
+
+.wao-ring-wrapper {
+  position: relative;
+  width: 170px;
+  height: 170px;
+}
+
+.wao-ring-svg {
+  transform: rotate(-90deg);
+}
+
+.wao-ring-bg {
+  fill: none;
+  stroke: #1f1d32;
+  stroke-width: 8px;
+}
+
+.wao-ring-progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 8px;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.wao-ring-center-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.wao-ring-value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.wao-ring-lbl {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* 3 columns stats under calorie ring */
+.wao-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  padding: 10px 20px 20px;
+  margin-bottom: 10px;
+}
+
+.wao-stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wao-stat-num {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.wao-stat-lbl {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Card Styles */
+.wao-card {
+  background-color: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+/* Macros Row with Custom Sliders */
+.wao-macros-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.wao-macro-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wao-macro-header {
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wao-macro-header.protein { color: var(--btn-red); }
+.wao-macro-header.carbs { color: var(--btn-blue); }
+.wao-macro-header.fat { color: var(--btn-yellow); }
+
+.wao-macro-slider {
+  width: 100%;
+  height: 6px;
+  background-color: var(--bg-tertiary);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.wao-macro-slider-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.wao-macro-slider-fill.protein { background-color: var(--btn-red); }
+.wao-macro-slider-fill.carbs { background-color: var(--btn-blue); }
+.wao-macro-slider-fill.fat { background-color: var(--btn-yellow); }
+
+.wao-macro-nums {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.wao-macro-nums strong {
+  color: white;
+}
+
+/* Carousel pagination indicator dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 16px;
+}
+
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.carousel-dot.active {
+  background-color: var(--primary);
+}
+
+/* 2 Main Action Buttons Grid (Yellow & Green) */
+.wao-actions-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 10px 20px;
+}
+
+.wao-action-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.wao-action-btn {
+  width: 100%;
+  height: 54px;
+  border-radius: 14px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  color: #12111d;
+}
+
+.wao-action-btn:active {
+  transform: scale(0.93);
+}
+
+.wao-action-btn.yellow { background-color: var(--btn-yellow); }
+.wao-action-btn.blue { background-color: var(--btn-blue); }
+.wao-action-btn.green { background-color: var(--btn-green); }
+.wao-action-btn.red { background-color: var(--btn-red); }
+
+.wao-action-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.5;
+}
+
+.wao-action-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  max-width: 75px;
+}
+
+/* Wao iOS Bottom Navigation Tab Bar */
+.wao-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(65px + var(--safe-area-bottom));
+  background-color: #0f0e1a;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding-bottom: var(--safe-area-bottom);
+  z-index: 1000;
+  box-shadow: 0 -4px 25px rgba(0,0,0,0.3);
+}
+
+.wao-tab-btn {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wao-tab-btn.active {
+  color: var(--primary);
+}
+
+.wao-tab-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Big center floating purple plus button */
+.wao-center-btn-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wao-floating-plus {
+  position: absolute;
+  top: -20px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 15px rgba(158, 128, 249, 0.45);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1100;
+}
+
+.wao-floating-plus:active {
+  transform: scale(0.9) rotate(45deg);
+}
+
+.wao-floating-plus.open {
+  background-color: var(--primary);
+  transform: rotate(135deg);
+}
+
+/* IMAGE 1: FULL OVERLAY BOTTOM MENU DRAWER */
+.wao-overlay-menu-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(12, 11, 20, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px 20px calc(80px + var(--safe-area-bottom));
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.wao-overlay-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.wao-overlay-card-btn {
+  background-color: #211e35;
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  text-decoration: none;
+}
+
+.wao-overlay-card-btn:active {
+  transform: scale(0.96);
+  background-color: #2d2a45;
+}
+
+.wao-overlay-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: #2c2944;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.wao-overlay-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Bottom full-width health stats button in overlay */
+.wao-overlay-wide-btn {
+  background-color: #211e35;
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  margin-top: 8px;
+}
+
+.wao-overlay-wide-btn:active {
+  transform: scale(0.98);
+  background-color: #2d2a45;
+}
+
+.wao-overlay-wide-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wao-badge-new {
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+/* DIARY PAGE STYLING FOR LOGGED MEALS */
+.wao-diary-meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.wao-diary-meal-item:last-child {
+  border-bottom: none;
+}
+
+/* Laser Scanning Overlays */
+.scanner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* General overlay bottom sheets (iOS slide-ups) */
+.bottom-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.bottom-sheet {
+  width: 100%;
+  max-width: 480px;
+  background-color: #1d1b2e;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px 20px calc(24px + var(--safe-area-bottom));
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+  animation: slideUp 0.35s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background-color: var(--text-muted);
+  border-radius: 2px;
+  margin: -10px auto 20px;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+}
+
+/* Custom Notification Toast */
+.toast-notification {
+  position: fixed;
+  top: calc(var(--safe-area-top) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #211e35;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 3000;
+  font-size: 13px;
+  font-weight: 600;
+  animation: toastFadeInOut 3.5s ease-in-out forwards;
+}
+
+.toast-notification.success { border-left: 3px solid var(--btn-green); }
+.toast-notification.error { border-left: 3px solid var(--btn-red); }
+.toast-notification.warning { border-left: 3px solid var(--btn-yellow); }
+.toast-notification.info { border-left: 3px solid var(--primary); }
+
+@keyframes toastFadeInOut {
+  0% { transform: translate(-50%, -20px); opacity: 0; }
+  10% { transform: translate(-50%, 0); opacity: 1; }
+  90% { transform: translate(-50%, 0); opacity: 1; }
+  100% { transform: translate(-50%, -20px); opacity: 0; }
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-input, .form-select {
+  background-color: #25223e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: white;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--primary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  background-color: #25223e;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.toggle-option {
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-option.active {
+  background-color: #1d1b2e;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.primary-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(158, 128, 249, 0.3);
+}
+
+.primary-btn:active {
+  transform: scale(0.97);
+}
+
+.secondary-btn {
+  background-color: #25223e;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 14px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:active {
+  transform: scale(0.97);
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #25223e;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+/* History Bar Graphs */
+.history-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 120px;
+  margin-top: 16px;
+  padding-top: 10px;
+}
+
+.history-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 6px;
+}
+
+.history-bar-track {
+  width: 12px;
+  height: 80px;
+  background-color: #25223e;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.history-bar-fill {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  background-color: var(--primary);
+  border-radius: 6px;
+  transition: height 0.6s ease;
+}
+
+.history-bar-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* AI Results Badges */
+.analyzed-macros-pill {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+  margin-bottom: 16px;
+}
+
+.macro-badge {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.macro-badge.calories { background-color: rgba(158, 128, 249, 0.15); color: var(--primary); }
+.macro-badge.protein { background-color: rgba(252, 109, 109, 0.15); color: var(--btn-red); }
+.macro-badge.carbs { background-color: rgba(64, 146, 255, 0.15); color: var(--btn-blue); }
+.macro-badge.fat { background-color: rgba(252, 196, 63, 0.15); color: var(--btn-yellow); }
