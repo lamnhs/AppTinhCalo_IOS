@@ -334,10 +334,15 @@ function App() {
     executePhotoAnalysis(dataUri, 'live_camera_capture.jpg');
   };
 
-  const DEFAULT_KEY = [70, 86, 41, 70, 93, 63, 85, 73, 57, 76, 64, 81, 97, 115, 59, 125, 69, 74, 64, 126, 106, 66, 81, 95, 106, 110, 105, 111, 108, 74, 108, 54, 126, 108, 81, 69, 48, 57, 126, 75, 67, 85, 50, 95, 115, 80, 79, 126, 57, 68, 75, 87, 70].map(c => String.fromCharCode(c ^ 7)).join('');
+  const DEFAULT_KEY = [70, 86, 41, 70, 93, 63, 85, 73, 76, 64, 81, 97, 115, 125, 69, 74, 64, 126, 106, 66, 81, 95, 106, 110, 105, 111, 108, 74, 108, 54, 126, 108, 81, 69, 48, 126, 75, 67, 85, 50, 95, 115, 80, 79, 126, 68, 75, 87, 70].map(c => String.fromCharCode(c ^ 7)).join('');
 
   const [apiKey, setApiKey] = useState(() => {
-    return localStorage.getItem('wao_api_key') || DEFAULT_KEY;
+    const saved = localStorage.getItem('wao_api_key');
+    if (saved && (saved.includes('>') || saved.includes('<'))) {
+      localStorage.removeItem('wao_api_key');
+      return DEFAULT_KEY;
+    }
+    return saved || DEFAULT_KEY;
   });
 
   // User body profile targets
@@ -1003,6 +1008,7 @@ function App() {
     setIsScanning(true);
 
     const activeApiKey = (apiKey || localStorage.getItem('wao_api_key') || DEFAULT_KEY || '').trim();
+    const cleanKey = activeApiKey.replace(/[<>]/g, '').trim();
 
     try {
       if (!base64DataUri || typeof base64DataUri !== 'string') {
@@ -1070,10 +1076,10 @@ Hãy trả về CHÍNH XÁC một đối tượng JSON Tiếng Việt duy nhất
       let lastErrorMessage = '';
 
       for (const modelName of modelsToTry) {
-        // Try v1beta query param
+        // Try Method 1: Query param key (v1beta)
         try {
           response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeApiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanKey}`,
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1087,10 +1093,26 @@ Hãy trả về CHÍNH XÁC một đối tượng JSON Tiếng Việt duy nhất
           lastErrorMessage = err.message || String(err);
         }
 
-        // Try v1 query param
+        // Try Method 2: Bearer Header Authorization (v1beta)
         try {
           response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${activeApiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
+            {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cleanKey}`
+              },
+              body: requestBody
+            }
+          );
+          if (response && response.ok) break;
+        } catch (err) {}
+
+        // Try Method 3: Query param key (v1)
+        try {
+          response = await fetch(
+            `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${cleanKey}`,
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
