@@ -958,9 +958,9 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       });
 
-      // Try gemini-flash-latest first (automatically points to active non-deprecated model)
+      // Try gemini-2.0-flash (Active standard Vision model)
       let response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -968,22 +968,10 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       );
 
-      // If gemini-flash-latest fails, try gemini-2.5-flash
+      // If gemini-2.0-flash fails, try gemini-2.0-flash-lite
       if (!response.ok) {
         response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: requestBody
-          }
-        );
-      }
-
-      // If that fails, try gemini-1.5-flash
-      if (!response.ok) {
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -994,7 +982,19 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Mã lỗi Gemini API ${response.status}: ${errText.slice(0, 100)}`);
+        let parsedErr = '';
+        try {
+          const errObj = JSON.parse(errText);
+          parsedErr = errObj.error?.message || errText;
+        } catch (e) {
+          parsedErr = errText;
+        }
+
+        if (response.status === 429 || parsedErr.includes('quota') || parsedErr.includes('RESOURCE_EXHAUSTED')) {
+          throw new Error(`Dự án Google AI này bị giới hạn Quota (Limit = 0). Vui lòng vào aistudio.google.com/app/apikey -> Nhấn Create API key -> Chọn 'Create API key in new project' để tạo Key mới có Free Tier miễn phí.`);
+        }
+
+        throw new Error(`Mã lỗi Gemini API ${response.status}: ${parsedErr.slice(0, 120)}`);
       }
 
       const data = await response.json();
