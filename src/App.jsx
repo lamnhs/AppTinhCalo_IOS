@@ -2601,11 +2601,9 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-              {/* Native Gallery Picker (Works 100% on iOS Safari & Zalo Browser) */}
+              {/* Native Camera Capture Button (On top) */}
               <label 
-                htmlFor="global-gallery-input"
                 className="primary-btn" 
-                onClick={() => setIsPhotoSourceModalOpen(false)}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -2617,17 +2615,35 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                   fontWeight: '700',
                   fontSize: '15px',
                   cursor: 'pointer',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                🖼️ Chọn ảnh từ Bộ sưu tập / Thư viện
+                📸 Chụp ảnh bằng Máy ảnh (Camera)
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  capture="environment"
+                  onChange={(e) => {
+                    setIsPhotoSourceModalOpen(false);
+                    handleImageFileChange(e);
+                  }}
+                  style={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    width: '100%', 
+                    height: '100%', 
+                    opacity: 0, 
+                    cursor: 'pointer' 
+                  }}
+                />
               </label>
 
-              {/* Native Camera Capture Button */}
+              {/* Native Gallery Picker (Second) */}
               <label 
-                htmlFor="global-camera-input"
                 className="secondary-btn" 
-                onClick={() => setIsPhotoSourceModalOpen(false)}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -2641,10 +2657,29 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                   fontSize: '15px',
                   border: '1px solid rgba(255,255,255,0.1)',
                   cursor: 'pointer',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                📸 Chụp ảnh bằng Camera
+                🖼️ Chọn ảnh từ Bộ sưu tập / Thư viện
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => {
+                    setIsPhotoSourceModalOpen(false);
+                    handleImageFileChange(e);
+                  }}
+                  style={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    width: '100%', 
+                    height: '100%', 
+                    opacity: 0, 
+                    cursor: 'pointer' 
+                  }}
+                />
               </label>
 
               {/* Web Live Viewfinder */}
@@ -2976,9 +3011,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                       </button>
 
                       <label 
-                        htmlFor="global-gallery-input"
                         className="secondary-btn"
-                        onClick={() => setIsScanDetailsOpen(false)}
                         style={{ 
                           padding: '12px', 
                           fontSize: '13px', 
@@ -2988,10 +3021,29 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                           borderRadius: '12px',
                           backgroundColor: 'rgba(255,255,255,0.06)',
                           color: 'white',
-                          border: '1px solid rgba(255,255,255,0.1)'
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          position: 'relative',
+                          overflow: 'hidden'
                         }}
                       >
                         🖼️ Chọn ảnh khác từ bộ sưu tập
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => {
+                            setIsScanDetailsOpen(false);
+                            handleImageFileChange(e);
+                          }}
+                          style={{ 
+                            position: 'absolute', 
+                            top: 0, 
+                            left: 0, 
+                            width: '100%', 
+                            height: '100%', 
+                            opacity: 0, 
+                            cursor: 'pointer' 
+                          }}
+                        />
                       </label>
                     </div>
                   </div>
@@ -3076,9 +3128,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                       Lưu vào Bữa {getMealNameVi(activeMealForAdd)}
                     </button>
                     <label 
-                      htmlFor="global-gallery-input"
                       className="secondary-btn"
-                      onClick={() => setIsScanDetailsOpen(false)}
                       style={{ 
                         padding: '12px', 
                         fontSize: '13px', 
@@ -3089,10 +3139,29 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                         backgroundColor: 'rgba(255,255,255,0.06)',
                         color: 'white',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        marginTop: '8px'
+                        marginTop: '8px',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
                       🖼️ Chọn ảnh món ăn khác từ bộ sưu tập
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          setIsScanDetailsOpen(false);
+                          handleImageFileChange(e);
+                        }}
+                        style={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          width: '100%', 
+                          height: '100%', 
+                          opacity: 0, 
+                          cursor: 'pointer' 
+                        }}
+                      />
                     </label>
                   </>
                 )}
