@@ -1414,6 +1414,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
     <div className="app-container">
       {/* Hidden File Inputs for Camera & Gallery (Always Mounted) */}
       <input 
+        id="global-camera-input"
         ref={cameraInputRef}
         type="file" 
         accept="image/*" 
@@ -1425,6 +1426,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
         style={{ display: 'none' }}
       />
       <input 
+        id="global-gallery-input"
         ref={galleryInputRef}
         type="file" 
         accept="image/*" 
@@ -2568,34 +2570,12 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
               Chọn phương thức tải ảnh món ăn để Gemini AI phân tích dinh dưỡng:
             </p>
 
-            {/* Hidden Inputs */}
-            <input 
-              ref={cameraInputRef}
-              type="file" 
-              accept="image/*" 
-              capture="environment" 
-              onChange={(e) => {
-                setIsPhotoSourceModalOpen(false);
-                handleImageFileChange(e);
-              }}
-              style={{ display: 'none' }}
-            />
-            <input 
-              ref={galleryInputRef}
-              type="file" 
-              accept="image/*" 
-              onChange={(e) => {
-                setIsPhotoSourceModalOpen(false);
-                handleImageFileChange(e);
-              }}
-              style={{ display: 'none' }}
-            />
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-              <button 
-                type="button" 
+              {/* Native Gallery Picker (Works 100% on iOS Safari & Zalo Browser) */}
+              <label 
+                htmlFor="global-gallery-input"
                 className="primary-btn" 
-                onClick={startLiveCamera}
+                onClick={() => setIsPhotoSourceModalOpen(false)}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -2605,16 +2585,19 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                   borderRadius: '16px',
                   background: 'linear-gradient(135deg, var(--primary), #7c5dfa)',
                   fontWeight: '700',
-                  fontSize: '15px'
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  textAlign: 'center'
                 }}
               >
-                📸 Chụp ảnh trực tiếp
-              </button>
+                🖼️ Chọn ảnh từ Bộ sưu tập / Thư viện
+              </label>
 
-              <button 
-                type="button" 
+              {/* Native Camera Capture Button */}
+              <label 
+                htmlFor="global-camera-input"
                 className="secondary-btn" 
-                onClick={() => galleryInputRef.current && galleryInputRef.current.click()}
+                onClick={() => setIsPhotoSourceModalOpen(false)}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -2626,10 +2609,35 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                   color: 'white',
                   fontWeight: '700',
                   fontSize: '15px',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  cursor: 'pointer',
+                  textAlign: 'center'
                 }}
               >
-                🖼️ Chọn ảnh từ bộ sưu tập
+                📸 Chụp ảnh bằng Camera
+              </label>
+
+              {/* Web Live Viewfinder */}
+              <button 
+                type="button" 
+                className="secondary-btn" 
+                onClick={startLiveCamera}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '8px', 
+                  padding: '12px', 
+                  borderRadius: '16px',
+                  backgroundColor: 'transparent',
+                  color: 'var(--text-secondary)',
+                  fontWeight: '600',
+                  fontSize: '13px',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                📹 Mở khung ngắm Live Viewfinder
               </button>
             </div>
 
@@ -2885,17 +2893,55 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                     <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '16px' }}>
                       {scannedResult.errorMessage}
                     </p>
-                    <button 
-                      type="button" 
-                      className="primary-btn" 
-                      onClick={() => {
-                        setIsScanDetailsOpen(false);
-                        setActiveTab('settings');
-                      }}
-                      style={{ padding: '12px', fontSize: '13px' }}
-                    >
-                      ⚙️ Đến phần Cài đặt nhập Gemini API Key
-                    </button>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                      <input 
+                        type="text" 
+                        className="form-input" 
+                        placeholder="Dán Gemini API Key của bạn tại đây (AIzaSy...)"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        style={{ padding: '12px', fontSize: '13px', textAlign: 'center', backgroundColor: '#1d1b2e', border: '1.5px solid var(--primary)', color: 'white' }}
+                      />
+                      <button 
+                        type="button" 
+                        className="primary-btn" 
+                        onClick={() => {
+                          if (!apiKey || !apiKey.trim()) {
+                            showToast('Vui lòng dán Gemini API Key hợp lệ!', 'warning');
+                            return;
+                          }
+                          const cleanKey = apiKey.trim();
+                          localStorage.setItem('wao_api_key', cleanKey);
+                          showToast('Đã lưu Gemini API Key mới!', 'success');
+                          if (selectedImage) {
+                            executePhotoAnalysis(selectedImage, 'retry.jpg');
+                          }
+                        }}
+                        style={{ padding: '12px', fontSize: '13px', backgroundColor: 'var(--primary)', fontWeight: '700' }}
+                      >
+                        ⚡ Lưu Key mới & Thử phân tích lại
+                      </button>
+
+                      <label 
+                        htmlFor="global-gallery-input"
+                        className="secondary-btn"
+                        onClick={() => setIsScanDetailsOpen(false)}
+                        style={{ 
+                          padding: '12px', 
+                          fontSize: '13px', 
+                          textAlign: 'center', 
+                          cursor: 'pointer', 
+                          display: 'block', 
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(255,255,255,0.06)',
+                          color: 'white',
+                          border: '1px solid rgba(255,255,255,0.1)'
+                        }}
+                      >
+                        🖼️ Chọn ảnh khác từ bộ sưu tập
+                      </label>
+                    </div>
                   </div>
                 ) : (
                   <>
@@ -2977,6 +3023,25 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                     <button type="button" className="primary-btn" onClick={handleSaveScanToDiary}>
                       Lưu vào Bữa {getMealNameVi(activeMealForAdd)}
                     </button>
+                    <label 
+                      htmlFor="global-gallery-input"
+                      className="secondary-btn"
+                      onClick={() => setIsScanDetailsOpen(false)}
+                      style={{ 
+                        padding: '12px', 
+                        fontSize: '13px', 
+                        textAlign: 'center', 
+                        cursor: 'pointer', 
+                        display: 'block', 
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        color: 'white',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        marginTop: '8px'
+                      }}
+                    >
+                      🖼️ Chọn ảnh món ăn khác từ bộ sưu tập
+                    </label>
                   </>
                 )}
               </div>
