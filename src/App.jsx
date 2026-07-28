@@ -933,7 +933,7 @@ function App() {
       };
     }
 
-    // Food presets
+    // Comprehensive Vietnamese Food Dataset
     const presetDishes = [
       {
         title: "Tô Phở Bò Tái Nạm & Rau Thơm",
@@ -945,6 +945,15 @@ function App() {
         summary: "Món ăn truyền thống giàu đạm, vị đậm đà thơm ngon. Lượng tinh bột vừa phải, thích hợp nạp năng lượng sau khi tập luyện."
       },
       {
+        title: "Tô Bún Bò Huế Đặc Biệt",
+        items: [
+          { name: "Bún sợi to tươi", weightGrams: 200, calories: 230, proteinGrams: 4, carbsGrams: 50, fatGrams: 1 },
+          { name: "Bắp bò & Chả nạm", weightGrams: 130, calories: 260, proteinGrams: 27, carbsGrams: 1, fatGrams: 16 },
+          { name: "Huyết & Nước dùng sả ớt", weightGrams: 250, calories: 110, proteinGrams: 6, carbsGrams: 4, fatGrams: 8 }
+        ],
+        summary: "Đặc sản Huế đậm đà hương vị sả ớt thơm ngon, giàu protein và khoáng chất."
+      },
+      {
         title: "Bún Thịt Nướng Chả Giò",
         items: [
           { name: "Bún tươi", weightGrams: 200, calories: 220, proteinGrams: 3, carbsGrams: 48, fatGrams: 1 },
@@ -954,7 +963,17 @@ function App() {
         summary: "Bữa ăn kết hợp hài hòa giữa chất xơ từ rau sống và chất đạm từ thịt nướng thơm lừng."
       },
       {
-        title: "Salad Ức Gà Sốt Chanh Dây / Oliu",
+        title: "Đĩa Cơm Tấm Sườn Bì Chả",
+        items: [
+          { name: "Cơm tấm chín", weightGrams: 200, calories: 260, proteinGrams: 5, carbsGrams: 57, fatGrams: 1 },
+          { name: "Sườn heo nướng mật ong", weightGrams: 150, calories: 350, proteinGrams: 28, carbsGrams: 8, fatGrams: 24 },
+          { name: "Chả trứng hấp & Bì heo", weightGrams: 80, calories: 140, proteinGrams: 10, carbsGrams: 4, fatGrams: 9 },
+          { name: "Mỡ hành & Đồ chua", weightGrams: 30, calories: 45, proteinGrams: 1, carbsGrams: 3, fatGrams: 4 }
+        ],
+        summary: "Bữa ăn giàu đạm và năng lượng chuẩn vị Sài Gòn, cực kỳ ngon miệng."
+      },
+      {
+        title: "Salad Ức Gà Sốt Chanh Dây (Eat Clean)",
         items: [
           { name: "Ức gà áp chảo", weightGrams: 150, calories: 240, proteinGrams: 35, carbsGrams: 0, fatGrams: 5 },
           { name: "Rau xà lách & Cà chua bi", weightGrams: 150, calories: 35, proteinGrams: 2, carbsGrams: 7, fatGrams: 0 },
@@ -977,6 +996,107 @@ function App() {
           { name: "Cơm trắng", weightGrams: 180, calories: 240, proteinGrams: 4, carbsGrams: 52, fatGrams: 1 }
         ],
         summary: "Món ăn giàu năng lượng và vị thơm ngon giòn rụm. Thích hợp xả cơ hoặc ăn bữa chính vui vẻ."
+      },
+      {
+        title: "Tô Bún Riêu Cua Trứng Cụm",
+        items: [
+          { name: "Bún tươi", weightGrams: 180, calories: 200, proteinGrams: 3, carbsGrams: 44, fatGrams: 1 },
+          { name: "Rêu cua đồng & Đậu phụ chiên", weightGrams: 120, calories: 210, proteinGrams: 16, carbsGrams: 6, fatGrams: 13 },
+          { name: "Cà chua & Nước dùng riêu cua", weightGrams: 250, calories: 80, proteinGrams: 3, carbsGrams: 5, fatGrams: 5 }
+        ],
+        summary: "Món ăn đậm đà thanh mát, giàu canxi từ cua đồng thiên nhiên."
+      },
+      {
+        title: "Đĩa Cơm Gà Xối Mỡ Dưa Cà Chua",
+        items: [
+          { name: "Cơm chiên hoàng kim", weightGrams: 200, calories: 310, proteinGrams: 6, carbsGrams: 58, fatGrams: 6 },
+          { name: "Gà xối mỡ da giòn", weightGrams: 170, calories: 420, proteinGrams: 30, carbsGrams: 5, fatGrams: 31 }
+        ],
+        summary: "Đặc sản cơm gà chiên da giòn rụm thơm ngon khó cưỡng."
+      },
+      {
+        title: "Tô Hủ Tiếu Nam Vang Sườn Tôm Thịt",
+        items: [
+          { name: "Hủ tiếu dai", weightGrams: 160, calories: 210, proteinGrams: 3, carbsGrams: 47, fatGrams: 1 },
+          { name: "Tôm tươi, Sườn heo & Thịt bằm", weightGrams: 130, calories: 270, proteinGrams: 28, carbsGrams: 2, fatGrams: 16 }
+        ],
+        summary: "Món hủ tiếu trứ danh vị ngọt thanh từ xương ống và hải sản tươi."
+      },
+      {
+        title: "Đĩa Bánh Cuốn Nóng Thịt Mộc Nhĩ",
+        items: [
+          { name: "Vỏ bánh cuốn tráng tươi", weightGrams: 180, calories: 220, proteinGrams: 4, carbsGrams: 45, fatGrams: 2 },
+          { name: "Nhân thịt bằm mộc nhĩ & Chả lụa", weightGrams: 100, calories: 190, proteinGrams: 14, carbsGrams: 4, fatGrams: 13 }
+        ],
+        summary: "Món ăn sáng nhẹ nhàng, thơm mùi hành phi giòn rụm."
+      },
+      {
+        title: "Đĩa Bánh Xèo Miền Tây Tôm Thịt",
+        items: [
+          { name: "Vỏ bánh xèo giòn rụm", weightGrams: 150, calories: 290, proteinGrams: 5, carbsGrams: 42, fatGrams: 11 },
+          { name: "Tôm thịt & Giá đỗ", weightGrams: 120, calories: 180, proteinGrams: 18, carbsGrams: 6, fatGrams: 9 }
+        ],
+        summary: "Món ăn dân dã giòn rụm cuốn cùng nhiều rau rừng và nước mắm chua ngọt."
+      },
+      {
+        title: "Tô Mì Quảng Gà Trứng Cút",
+        items: [
+          { name: "Sợi mì Quảng vàng", weightGrams: 180, calories: 240, proteinGrams: 5, carbsGrams: 48, fatGrams: 3 },
+          { name: "Thịt gà kho đậm đà & Trứng cút", weightGrams: 120, calories: 230, proteinGrams: 22, carbsGrams: 3, fatGrams: 14 }
+        ],
+        summary: "Đặc sản miền Trung thơm nức mùi đậu phụng rang và bánh đa giòn."
+      },
+      {
+        title: "Đĩa Gỏi Cuốn Tôm Thịt (4 Cuốn)",
+        items: [
+          { name: "Gỏi cuốn tôm thịt", weightGrams: 200, calories: 260, proteinGrams: 18, carbsGrams: 36, fatGrams: 4 },
+          { name: "Sốt tương đậu phụng", weightGrams: 40, calories: 90, proteinGrams: 3, carbsGrams: 6, fatGrams: 6 }
+        ],
+        summary: "Món ăn thanh mát ít chất béo, phù hợp cho người ăn kiêng kiểm soát calo."
+      },
+      {
+        title: "Đĩa Cơm Chiên Dương Châu",
+        items: [
+          { name: "Cơm chiên trứng tôm lạp xưởng", weightGrams: 250, calories: 460, proteinGrams: 16, carbsGrams: 62, fatGrams: 16 },
+          { name: "Rau củ dưa leo", weightGrams: 60, calories: 20, proteinGrams: 1, carbsGrams: 4, fatGrams: 0 }
+        ],
+        summary: "Bữa ăn giàu carbohydrate và năng lượng cho cả ngày hoạt động."
+      },
+      {
+        title: "Đĩa Cơm Bò Lúc Lắc Tiêu Xanh",
+        items: [
+          { name: "Thịt bò thăn lúc lắc", weightGrams: 150, calories: 310, proteinGrams: 32, carbsGrams: 4, fatGrams: 18 },
+          { name: "Cơm trắng & Khoai tây chiên", weightGrams: 200, calories: 280, proteinGrams: 5, carbsGrams: 55, fatGrams: 5 }
+        ],
+        summary: "Món ăn đạm cao đong đầy dinh dưỡng cho cơ bắp."
+      },
+      {
+        title: "Đĩa Bánh Tráng Trộn Sa Tế Bò Khô",
+        items: [
+          { name: "Bánh tráng sa tế trứng cút bò khô", weightGrams: 150, calories: 380, proteinGrams: 12, carbsGrams: 58, fatGrams: 12 }
+        ],
+        summary: "Món ăn vặt trứ danh đậm đà hương vị tắc sa tế."
+      },
+      {
+        title: "Đĩa Chả Giò Chiên Giòn (Nem Rán)",
+        items: [
+          { name: "Chả giò chiên giòn", weightGrams: 180, calories: 390, proteinGrams: 14, carbsGrams: 30, fatGrams: 24 }
+        ],
+        summary: "Món nem truyền thống giòn rụm thơm lừng."
+      },
+      {
+        title: "Ly Cà Phê Sữa Đá Sài Gòn",
+        items: [
+          { name: "Cà phê sữa đá đặc", weightGrams: 180, calories: 140, proteinGrams: 3, carbsGrams: 24, fatGrams: 4 }
+        ],
+        summary: "Thức uống khởi động tinh thần tỉnh táo bừng sức sống."
+      },
+      {
+        title: "Ly Trà Sữa Chân Trâu Đường Đen",
+        items: [
+          { name: "Trà sữa chân trâu", weightGrams: 350, calories: 360, proteinGrams: 4, carbsGrams: 65, fatGrams: 10 }
+        ],
+        summary: "Món giải khát ngọt ngào thơm béo."
       }
     ];
 
