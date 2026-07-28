@@ -997,7 +997,7 @@ function App() {
     };
   };
 
-  // Call Gemini AI / Smart AI Engine for image analysis
+  // Call Gemini AI for real image recognition
   const executePhotoAnalysis = async (base64DataUri, fileName = '') => {
     setIsScanDetailsOpen(true);
     setIsScanning(true);
@@ -1005,17 +1005,48 @@ function App() {
     const activeApiKey = (apiKey || localStorage.getItem('wao_api_key') || DEFAULT_KEY || '').trim();
 
     try {
-      const mimeType = base64DataUri.split(';')[0].split(':')[1];
-      const rawBase64 = base64DataUri.split(',')[1];
-      
-      const prompt = `Phân tích hình ảnh bữa ăn này và ước lượng lượng calo, chất béo (fat), protein, carbohydrate (carbs), và khối lượng (weightGrams) của từng món ăn trong hình. 
-Hãy trả về một đối tượng JSON chính xác theo ngôn ngữ Tiếng Việt, mô tả chi tiết:
-1. Tên tổng quát của đĩa/tô/bữa ăn này (dishTitle), ví dụ: "Bánh Pizza Pepperoni phô mai", "Bún thịt nướng chả giò", "Phở bò tái nạm", "Hộp sữa tươi TH True Milk 180ml", v.v.
-2. Danh sách các món ăn thành phần trong hình (foodItems), mỗi món gồm: tên món (name), khối lượng ước lượng tính bằng gram (weightGrams), calo (calories), protein tính bằng gram (proteinGrams), carbs tính bằng gram (carbsGrams), fat tính bằng gram (fatGrams).
-3. Tổng lượng calo (totalCalories), tổng protein (totalProteinGrams), tổng carbs (totalCarbsGrams), tổng fat (totalFatGrams).
-4. Một câu tóm tắt phân tích ngắn gọn, khoảng 1-2 câu (analysisSummary), nhận xét về dinh dưỡng bữa ăn này.
+      if (!base64DataUri || typeof base64DataUri !== 'string') {
+        throw new Error('Không nhận được dữ liệu hình ảnh');
+      }
 
-Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ảnh thực tế của món ăn.`;
+      let mimeType = 'image/jpeg';
+      if (base64DataUri.includes(';base64,')) {
+        const parts = base64DataUri.split(';');
+        if (parts[0] && parts[0].includes(':')) {
+          mimeType = parts[0].split(':')[1].toLowerCase();
+        }
+      }
+      if (mimeType.includes('jfif') || mimeType.includes('pjpeg') || mimeType.includes('octet-stream') || !mimeType.startsWith('image/')) {
+        mimeType = 'image/jpeg';
+      }
+
+      const rawBase64 = base64DataUri.includes(',') ? base64DataUri.split(',')[1] : base64DataUri;
+      
+      const prompt = `Bạn là chuyên gia thị giác máy tính và phân tích dinh dưỡng AI. Phân tích chính xác hình ảnh được cung cấp:
+
+1. NẾU HÌNH ẢNH LÀ MÓN ĂN / BỮA ĂN / THỨC UỐNG:
+   - Nhận diện tên đĩa ăn tổng quát (dishTitle).
+   - Liệt kê danh sách các món thành phần (foodItems), gồm: tên món (name), khối lượng gram (weightGrams), calo (calories), protein (proteinGrams), carbs (carbsGrams), fat (fatGrams).
+   - Nhận xét ngắn gọn về giá trị dinh dưỡng (analysisSummary).
+
+2. NẾU HÌNH ẢNH KHÔNG PHẢI LÀ MÓN ĂN (ví dụ: Logo công ty, văn bản, đồ vật, phong cảnh, con người):
+   - Đặt dishTitle là tên đồ vật/logo chính xác trong ảnh (ví dụ: "Logo DTD Atlantic Ocean", "Văn bản tài liệu", "Khung cảnh phòng làm việc").
+   - Để danh sách foodItems là mảng rỗng [].
+   - Đặt totalCalories = 0, totalProteinGrams = 0, totalCarbsGrams = 0, totalFatGrams = 0.
+   - Viết ngắn gọn trong analysisSummary giải thích: "Đây là hình ảnh [tên đồ vật/logo], không phải là thức ăn nên không chứa calo hay chất dinh dưỡng."
+
+Hãy trả về CHÍNH XÁC một đối tượng JSON Tiếng Việt duy nhất:
+{
+  "dishTitle": "Tên món ăn hoặc tên logo/đồ vật",
+  "foodItems": [
+    { "name": "Tên món", "weightGrams": 150, "calories": 200, "proteinGrams": 15, "carbsGrams": 20, "fatGrams": 5 }
+  ],
+  "totalCalories": 200,
+  "totalProteinGrams": 15,
+  "totalCarbsGrams": 20,
+  "totalFatGrams": 5,
+  "analysisSummary": "Tóm tắt nhận xét"
+}`;
 
       const requestBody = JSON.stringify({
         contents: [{
@@ -1023,50 +1054,23 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
             { text: prompt },
             { inlineData: { mimeType, data: rawBase64 } }
           ]
-        }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              dishTitle: { type: "STRING" },
-              foodItems: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    name: { type: "STRING" },
-                    weightGrams: { type: "NUMBER" },
-                    calories: { type: "NUMBER" },
-                    proteinGrams: { type: "NUMBER" },
-                    carbsGrams: { type: "NUMBER" },
-                    fatGrams: { type: "NUMBER" }
-                  },
-                  required: ["name", "weightGrams", "calories", "proteinGrams", "carbsGrams", "fatGrams"]
-                }
-              },
-              totalCalories: { type: "NUMBER" },
-              totalProteinGrams: { type: "NUMBER" },
-              totalCarbsGrams: { type: "NUMBER" },
-              totalFatGrams: { type: "NUMBER" },
-              analysisSummary: { type: "STRING" }
-            },
-            required: ["dishTitle", "foodItems", "totalCalories", "totalProteinGrams", "totalCarbsGrams", "totalFatGrams", "analysisSummary"]
-          }
-        }
+        }]
       });
 
+      // Official Google Gemini Vision Models
       const modelsToTry = [
-        'gemini-3.6-flash',
-        'gemini-3.5-flash',
         'gemini-2.0-flash',
+        'gemini-2.0-flash-exp',
         'gemini-1.5-flash',
-        'gemini-flash-latest'
+        'gemini-1.5-flash-8b',
+        'gemini-1.5-pro'
       ];
 
       let response = null;
+      let lastErrorMessage = '';
+
       for (const modelName of modelsToTry) {
-        // Method A: Query param key
+        // Try v1beta query param
         try {
           response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeApiKey}`,
@@ -1077,18 +1081,19 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
             }
           );
           if (response && response.ok) break;
-        } catch (err) {}
+          const errTxt = await response.text();
+          lastErrorMessage = errTxt;
+        } catch (err) {
+          lastErrorMessage = err.message || String(err);
+        }
 
-        // Method B: Bearer Header Authorization
+        // Try v1 query param
         try {
           response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
+            `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${activeApiKey}`,
             {
               method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${activeApiKey}`
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: requestBody
             }
           );
@@ -1097,7 +1102,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       }
 
       if (!response || !response.ok) {
-        throw new Error('Gemini API unreachable or key error');
+        throw new Error(lastErrorMessage || 'Lỗi kết nối Gemini API (Google)');
       }
 
       const data = await response.json();
@@ -1116,9 +1121,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       }
 
       const parsed = JSON.parse(cleanJsonText);
-      const itemsList = Array.isArray(parsed.foodItems) && parsed.foodItems.length > 0 
-        ? parsed.foodItems 
-        : [{ name: parsed.dishTitle || "Món ăn nhận diện", weightGrams: 200, calories: parsed.totalCalories || 300, proteinGrams: parsed.totalProteinGrams || 15, carbsGrams: parsed.totalCarbsGrams || 30, fatGrams: parsed.totalFatGrams || 10 }];
+      const itemsList = Array.isArray(parsed.foodItems) ? parsed.foodItems : [];
 
       const formattedItems = itemsList.map((item, idx) => ({
         id: Date.now() + idx + Math.random(),
@@ -1133,48 +1136,33 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
       setEditableItems(formattedItems);
 
       const formatted = {
-        name: parsed.dishTitle || formattedItems[0]?.name || "Bữa ăn quét được",
+        name: parsed.dishTitle || (formattedItems[0] ? formattedItems[0].name : "Hình ảnh đã nhận diện"),
         totalCalories: Math.round(parsed.totalCalories || formattedItems.reduce((a, c) => a + c.calories, 0)),
         totalProteinGrams: Math.round(parsed.totalProteinGrams || formattedItems.reduce((a, c) => a + c.protein, 0)),
         totalCarbsGrams: Math.round(parsed.totalCarbsGrams || formattedItems.reduce((a, c) => a + c.carbs, 0)),
         totalFatGrams: Math.round(parsed.totalFatGrams || formattedItems.reduce((a, c) => a + c.fat, 0)),
-        analysisSummary: parsed.analysisSummary || "Đã phân tích khẩu phần dinh dưỡng qua AI.",
+        analysisSummary: parsed.analysisSummary || "Đã phân tích hình ảnh qua Gemini AI.",
         foodItems: formattedItems
       };
 
       setScannedResult(formatted);
       setIsScanning(false);
-      showToast(`AI nhận diện thành công: ${formatted.name}!`, 'success');
+      showToast(`AI nhận diện xong: ${formatted.name}!`, 'success');
     } catch (err) {
-      console.warn('Gemini API skipped, using Smart AI Engine:', err);
-      
-      const fallbackResult = getSmartFallbackAnalysis(base64DataUri);
-
-      const formattedItems = fallbackResult.foodItems.map((item, idx) => ({
-        id: Date.now() + idx + Math.random(),
-        name: item.name,
-        weightGrams: item.weightGrams,
-        calories: item.calories,
-        protein: item.proteinGrams,
-        carbs: item.carbsGrams,
-        fat: item.fatGrams
-      }));
-
-      setEditableItems(formattedItems);
-
-      const formatted = {
-        name: fallbackResult.dishTitle,
-        totalCalories: fallbackResult.totalCalories,
-        totalProteinGrams: fallbackResult.totalProteinGrams,
-        totalCarbsGrams: fallbackResult.totalCarbsGrams,
-        totalFatGrams: fallbackResult.totalFatGrams,
-        analysisSummary: fallbackResult.analysisSummary,
-        foodItems: formattedItems
-      };
-
-      setScannedResult(formatted);
+      console.error('API Error:', err);
       setIsScanning(false);
-      showToast(`AI nhận diện thành công: ${formatted.name}!`, 'success');
+
+      let cleanMessage = err.message || '';
+      try {
+        const jsonErr = JSON.parse(cleanMessage);
+        cleanMessage = jsonErr.error?.message || cleanMessage;
+      } catch (e) {}
+
+      setScannedResult({
+        isError: true,
+        errorMessage: cleanMessage ? `Gemini API phản hồi: ${cleanMessage.slice(0, 160)}` : 'Không thể kết nối đến Google Gemini AI API.'
+      });
+      showToast('Lỗi nhận diện Gemini AI!', 'error');
     }
   };
 
