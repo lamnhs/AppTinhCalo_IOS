@@ -304,9 +304,16 @@ function App() {
   const captureLivePhoto = () => {
     if (!videoRef.current) return;
     const video = videoRef.current;
+    
+    // Ensure video stream has loaded valid frames
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+      showToast('Máy ảnh đang kết nối, vui lòng bấm lại sau 1 giây!', 'warning');
+      return;
+    }
+
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const dataUri = canvas.toDataURL('image/jpeg', 0.85);
@@ -1024,20 +1031,31 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
 
       const parsed = JSON.parse(cleanJsonText);
 
+      const itemsList = Array.isArray(parsed.foodItems) && parsed.foodItems.length > 0
+        ? parsed.foodItems
+        : [{
+            name: parsed.dishTitle || "Món ăn nhận diện",
+            weightGrams: 200,
+            calories: Math.round(parsed.totalCalories || 0),
+            proteinGrams: Math.round(parsed.totalProteinGrams || 0),
+            carbsGrams: Math.round(parsed.totalCarbsGrams || 0),
+            fatGrams: Math.round(parsed.totalFatGrams || 0)
+          }];
+
       const formatted = {
-        name: parsed.dishTitle || parsed.foodItems[0]?.name || "Bữa ăn quét được",
-        totalCalories: Math.round(parsed.totalCalories),
-        totalProteinGrams: Math.round(parsed.totalProteinGrams),
-        totalCarbsGrams: Math.round(parsed.totalCarbsGrams),
-        totalFatGrams: Math.round(parsed.totalFatGrams),
-        analysisSummary: parsed.analysisSummary,
-        foodItems: parsed.foodItems.map(item => ({
-          name: item.name,
-          weightGrams: Math.round(item.weightGrams),
-          calories: Math.round(item.calories),
-          protein: Math.round(item.proteinGrams),
-          carbs: Math.round(item.carbsGrams),
-          fat: Math.round(item.fatGrams)
+        name: parsed.dishTitle || itemsList[0]?.name || "Bữa ăn quét được",
+        totalCalories: Math.round(parsed.totalCalories || itemsList.reduce((a, c) => a + (c.calories || 0), 0)),
+        totalProteinGrams: Math.round(parsed.totalProteinGrams || itemsList.reduce((a, c) => a + (c.proteinGrams || 0), 0)),
+        totalCarbsGrams: Math.round(parsed.totalCarbsGrams || itemsList.reduce((a, c) => a + (c.carbsGrams || 0), 0)),
+        totalFatGrams: Math.round(parsed.totalFatGrams || itemsList.reduce((a, c) => a + (c.fatGrams || 0), 0)),
+        analysisSummary: parsed.analysisSummary || "Đã phân tích khẩu phần dinh dưỡng qua Gemini AI.",
+        foodItems: itemsList.map(item => ({
+          name: item.name || "Món ăn",
+          weightGrams: Math.round(item.weightGrams || 100),
+          calories: Math.round(item.calories || 0),
+          protein: Math.round(item.proteinGrams || item.protein || 0),
+          carbs: Math.round(item.carbsGrams || item.carbs || 0),
+          fat: Math.round(item.fatGrams || item.fat || 0)
         }))
       };
 
