@@ -276,7 +276,12 @@ function App() {
     try {
       setIsPhotoSourceModalOpen(false);
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        video: { 
+          facingMode: { ideal: 'environment' }, 
+          aspectRatio: { ideal: 0.75 },
+          width: { ideal: 1080 }, 
+          height: { ideal: 1440 } 
+        }
       });
       setCameraStream(stream);
       setIsLiveCameraOpen(true);
@@ -953,17 +958,12 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
         }
       });
 
-      const apiHeaders = {
-        'Content-Type': 'application/json',
-        'X-goog-api-key': apiKey
-      };
-
       // Try gemini-flash-latest first (automatically points to active non-deprecated model)
       let response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
         {
           method: 'POST',
-          headers: apiHeaders,
+          headers: { 'Content-Type': 'application/json' },
           body: requestBody
         }
       );
@@ -974,7 +974,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
-            headers: apiHeaders,
+            headers: { 'Content-Type': 'application/json' },
             body: requestBody
           }
         );
@@ -986,7 +986,7 @@ Hãy ước lượng một cách hợp lý và khoa học dựa trên hình ản
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
           {
             method: 'POST',
-            headers: apiHeaders,
+            headers: { 'Content-Type': 'application/json' },
             body: requestBody
           }
         );
@@ -1599,11 +1599,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                 className="wao-action-btn green" 
                 onClick={() => {
                   setIsPlusOpen(false);
-                  if (cameraInputRef.current) {
-                    cameraInputRef.current.click();
-                  } else {
-                    setIsPhotoSourceModalOpen(true);
-                  }
+                  startLiveCamera();
                 }}
               >
                 <Sparkles />
@@ -2609,7 +2605,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
               </button>
             </div>
 
-            <div style={{ position: 'relative', width: '100%', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#000', minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', maxHeight: '55vh', borderRadius: '20px', overflow: 'hidden', backgroundColor: '#000', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <video 
                 ref={(el) => {
                   videoRef.current = el;
@@ -2620,7 +2616,7 @@ Trả về đúng định dạng JSON chuẩn tiếng Việt.`;
                 autoPlay 
                 playsInline 
                 muted
-                style={{ width: '100%', maxHeight: '350px', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
 
